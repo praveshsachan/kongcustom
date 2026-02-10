@@ -22,7 +22,10 @@ RUN luarocks install https://luarocks.org/lua-resty-http-0.15-0.src.rock && \
 # 4) lua-resty-openidc (pinned to 1.8.0-1 rockspec in repo root)
 RUN luarocks install https://raw.githubusercontent.com/zmartzone/lua-resty-openidc/master/lua-resty-openidc-1.8.0-1.rockspec
 
-# 5) Community OSS "kong-openid-connect" plugin (skip dependency resolution)
+# 5) Install lua-cjson without manifest search
+RUN luarocks install https://luarocks.org/lua-cjson-2.1.0.10-1.src.rock
+
+# 6) Community OSS "kong-openid-connect" plugin (skip dependency resolution)
 RUN luarocks install \
   https://raw.githubusercontent.com/cuongntr/kong-openid-connect-plugin/main/kong-openid-connect-1.1.0-1.rockspec \
   --deps-mode=none
