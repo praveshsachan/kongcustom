@@ -21,4 +21,4 @@ jobs:
         with:
           push: true
           context: .
-          tags: yourname/kong-oidc:latest
+          tags: blossomminds/kong-oidc:latest
