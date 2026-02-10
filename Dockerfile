@@ -2,10 +2,7 @@ FROM kong:3.6
 
 USER root
 
-# Install required tools (Debian/Ubuntu base)
-# - build-essential: gcc/make/ld, etc.
-# - git, unzip: needed by luarocks when fetching/building from sources
-# - ca-certificates, curl: TLS & downloads during build steps
+# Install needed build tools for LuaRocks and TLS-enabled downloads
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
       build-essential \
@@ -15,16 +12,20 @@ RUN apt-get update && \
       curl && \
     rm -rf /var/lib/apt/lists/*
 
-# Install lua-resty dependencies via pinned rockspec URLs (avoid LuaRocks manifest parsing)
-RUN luarocks install https://raw.githubusercontent.com/zmartzone/lua-resty-openidc/v1.7.7/lua-resty-openidc-1.7.7-1.rockspec && \
-    luarocks install https://raw.githubusercontent.com/ledgetech/lua-resty-http/v0.15.0-0/lua-resty-http-0.15.0-0.rockspec && \
-    luarocks install https://raw.githubusercontent.com/bungle/lua-resty-session/v4.0.7/lua-resty-session-4.0.7-1.rockspec
+# ---- Install deps via explicit rockspec URLs to avoid manifest parsing ----
+# lua-resty-openidc (1.8.0-1)
+RUN luarocks install https://raw.githubusercontent.com/zmartzone/lua-resty-openidc/master/lua-resty-openidc-1.8.0-1.rockspec
 
-# Install ONLY the kong-openid-connect plugin (Optum)
-# Pin to a specific rockspec version for reproducibility; adjust if you need a newer release.
-RUN luarocks install https://raw.githubusercontent.com/Optum/kong-openid-connect/master/kong-openid-connect-1.0.1-1.rockspec
+# lua-resty-http (0.15-0) - NOTE the version is "0.15-0" (not 0.15.0-0)
+RUN luarocks install https://raw.githubusercontent.com/ledgetech/lua-resty-http/master/lua-resty-http-0.15-0.rockspec
 
-# Enable the plugin runtime name exactly as shipped by this rock
+# lua-resty-session (4.1.5-1) - recent and Lua 5.1 compatible
+RUN luarocks install https://raw.githubusercontent.com/bungle/lua-resty-session/master/lua-resty-session-4.1.5-1.rockspec
+
+# ---- Install the community 'kong-openid-connect' plugin (1.1.0-1) ----
+RUN luarocks install https://raw.githubusercontent.com/cuongntr/kong-openid-connect-plugin/main/kong-openid-connect-1.1.0-1.rockspec
+
+# Enable the plugin by its exact runtime name
 ENV KONG_PLUGINS="bundled,kong-openid-connect"
 
 USER kong
