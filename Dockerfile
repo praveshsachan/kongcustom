@@ -22,8 +22,11 @@ RUN luarocks install https://luarocks.org/lua-resty-http-0.15-0.src.rock && \
 # 4) lua-resty-openidc (pinned to 1.8.0-1 rockspec in repo root)
 RUN luarocks install https://raw.githubusercontent.com/zmartzone/lua-resty-openidc/master/lua-resty-openidc-1.8.0-1.rockspec
 
-# 5) Community OSS "kong-openid-connect" plugin (Kong OSS, not the Enterprise plugin)
-RUN luarocks install https://raw.githubusercontent.com/cuongntr/kong-openid-connect-plugin/main/kong-openid-connect-1.1.0-1.rockspec
+# 5) Community OSS "kong-openid-connect" plugin (skip dependency resolution)
+RUN luarocks install \
+  https://raw.githubusercontent.com/cuongntr/kong-openid-connect-plugin/main/kong-openid-connect-1.1.0-1.rockspec \
+  --deps-mode=none
+
 
 # Enable the plugin by its runtime name
 ENV KONG_PLUGINS="bundled,kong-openid-connect"
